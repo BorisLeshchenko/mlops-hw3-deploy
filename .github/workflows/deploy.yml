@@ -14,7 +14,9 @@ jobs:
 
       - name: build docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+          IMAGE_NAME=ghcr.io/${{ github.repository }}
+          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+          docker build -t ${IMAGE_NAME_LOWER}:${{ github.sha }} .
 
       - name: login to ghcr
         run: |
@@ -22,14 +24,18 @@ jobs:
 
       - name: push docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          IMAGE_NAME=ghcr.io/${{ github.repository }}
+          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+          docker push ${IMAGE_NAME_LOWER}:${{ github.sha }}
 
       - name: deploy via api
         run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository }}
+          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
           curl -X POST "https://example.com/deploy" \
             -H "Authorization: Bearer ${{ secrets.CLOUD_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "{\"image\": \"ghcr.io/${{ github.repository }}:${{ github.sha }}\",\"model_version\": \"${{ secrets.MODEL_VERSION }}\"}"
+            -d "{\"image\": \"${IMAGE_NAME_LOWER}:${{ github.sha }}\",\"model_version\": \"${{ secrets.MODEL_VERSION }}\"}"
 
       - name: check health after deploy
         run: |
