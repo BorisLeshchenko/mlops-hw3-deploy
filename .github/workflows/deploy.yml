@@ -1,0 +1,36 @@
+name: model-deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: build docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+
+      - name: login to ghcr
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: push docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: deploy via api
+        run: |
+          curl -X POST "https://example.com/deploy" \
+            -H "Authorization: Bearer ${{ secrets.CLOUD_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"image\": \"ghcr.io/${{ github.repository }}:${{ github.sha }}\",\"model_version\": \"${{ secrets.MODEL_VERSION }}\"}"
+
+      - name: check health after deploy
+        run: |
+          curl -s "https://example.com/health" || exit 1
