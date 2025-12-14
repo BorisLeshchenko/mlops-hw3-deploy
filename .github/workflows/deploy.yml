@@ -24,10 +24,8 @@ jobs:
 
       - name: push docker image
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository }}
-          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-          docker push ${IMAGE_NAME_LOWER}:${{ github.sha }}
-
+          echo "имитация отправки образа в контейнерный реестр"
+          
       - name: deploy via api
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}
