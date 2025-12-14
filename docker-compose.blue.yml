@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  ml-service-blue:
+    image: ml-service:v1.0.0
+    environment:
+      - MODEL_VERSION=v1.0.0
+    ports:
+      - "8081:8080"
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - ml-service-blue
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
