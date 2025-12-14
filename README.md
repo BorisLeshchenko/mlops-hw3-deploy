@@ -120,4 +120,4 @@ Workflow срабатывает при push в ветку `main` и выполн
 
 Логи запросов и ошибок пишет сервер `uvicorn`/контейнеры docker, их можно посмотреть командами:
 docker logs ml-service-blue
-docker logs ml-service-green
+docker logs ml-service-green 
